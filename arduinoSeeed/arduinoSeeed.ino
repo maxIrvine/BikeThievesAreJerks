@@ -4,9 +4,6 @@
 
 BLEService ledService("19B10000-E8F2-537E-4F6C-D104768A1214"); // Bluetooth® Low Energy LED Service
 
-// Bluetooth® Low Energy LED Switch Characteristic - custom 128-bit UUID, read and writable by central
-BLEByteCharacteristic switchCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
-
 BLEFloatCharacteristic AccelerometerxCharacteristic("13012F01-F8C3-4F4A-A8F4-15CD926DA146", BLERead | BLEWrite);
 BLEStringCharacteristic IMUCharacteristic("13012F07-F8C3-4F4A-A8F4-15CD926DA146", BLENotify | BLEWrite, 50);
 
@@ -45,7 +42,6 @@ void setup() {
   BLE.setAdvertisedService(ledService);
 
   // add the characteristic to the service
-  ledService.addCharacteristic(switchCharacteristic);
   ledService.addCharacteristic(AccelerometerxCharacteristic);
   ledService.addCharacteristic(IMUCharacteristic);
 
@@ -53,7 +49,6 @@ void setup() {
   BLE.addService(ledService);
 
   // set the initial value for the characeristic:
-  switchCharacteristic.writeValue(0);
   AccelerometerxCharacteristic.writeValue(counter);
   IMUCharacteristic.writeValue("Hello");
 

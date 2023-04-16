@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-
 import {LineChart} from 'react-native-chart-kit';
 import {stringToBytes, bytesToString} from 'convert-string';
 
@@ -138,7 +137,7 @@ export default class App extends Component {
     });
     console.log('startScan');
     if (!this.state.isScanning) {
-      BleManager.scan([], 5, false) // scan only for heart rate devices
+      BleManager.scan([], 5, false) // scan only for devices with NANO_SERVICE_UUID
         .then(results => {
           console.log('Scanning...');
           this.setState({isScanning: true}, () =>
