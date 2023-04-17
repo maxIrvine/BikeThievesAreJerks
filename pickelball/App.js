@@ -22,7 +22,7 @@ const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 let peripherals = new Map();
 
-const NANO_SERVICE_UUID = '19B10001-E8F2-537E-4F6C-D104768A1214';
+const NANO_SERVICE_UUID = '19B10000-E8F2-537E-4F6C-D104768A1214';
 const IMU_CHARACTERISTICS_UUID = '13012F07-F8C3-4F4A-A8F4-15CD926DA146';
 const WRITE_CHARACTERISTICS_UUID = '19B10001-E8F2-537E-4F6C-D104768A1214';
 
