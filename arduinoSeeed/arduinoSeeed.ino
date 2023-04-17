@@ -6,6 +6,7 @@ BLEService ledService("19B10000-E8F2-537E-4F6C-D104768A1214"); // Bluetooth® Lo
 
 BLEFloatCharacteristic AccelerometerxCharacteristic("13012F01-F8C3-4F4A-A8F4-15CD926DA146", BLERead | BLEWrite);
 BLEStringCharacteristic IMUCharacteristic("13012F07-F8C3-4F4A-A8F4-15CD926DA146", BLENotify | BLEWrite, 50);
+BLEByteCharacteristic switchCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214", BLERead | BLEWrite);
 
 const int ledPin = LED_BUILTIN; // pin to use for the LED
 
@@ -23,6 +24,7 @@ void setup() {
 
   // set LED pin to output mode
   pinMode(ledPin, OUTPUT);
+  pinMode(0, OUTPUT);
 
   // begin initialization
   if (!BLE.begin()) {
@@ -44,6 +46,7 @@ void setup() {
   // add the characteristic to the service
   ledService.addCharacteristic(AccelerometerxCharacteristic);
   ledService.addCharacteristic(IMUCharacteristic);
+  ledService.addCharacteristic(switchCharacteristic);
 
   // add service
   BLE.addService(ledService);
@@ -51,6 +54,11 @@ void setup() {
   // set the initial value for the characeristic:
   AccelerometerxCharacteristic.writeValue(counter);
   IMUCharacteristic.writeValue("Hello");
+  
+   // assign event handlers for characteristic
+  switchCharacteristic.setEventHandler(BLEWritten, switchCharacteristicWritten);
+  // set an initial value for the characteristic
+  switchCharacteristic.setValue(0);
 
   // start advertising
   BLE.advertise();
@@ -81,5 +89,18 @@ void loop() {
     // when the central disconnects, print it out:
     Serial.print(F("Disconnected from central: "));
     Serial.println(central.address());
+  }
+}
+
+void switchCharacteristicWritten(BLEDevice central, BLECharacteristic characteristic) {
+  // central wrote new value to characteristic, update LED
+  Serial.print("Characteristic event, written: ");
+
+  if (switchCharacteristic.value()) {
+    Serial.println("LED on");
+    analogWrite(0, 255);
+  } else {
+    Serial.println("LED off");
+    analogWrite(0, 0);
   }
 }

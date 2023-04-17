@@ -24,6 +24,7 @@ let peripherals = new Map();
 
 const NANO_SERVICE_UUID = '19B10001-E8F2-537E-4F6C-D104768A1214';
 const IMU_CHARACTERISTICS_UUID = '13012F07-F8C3-4F4A-A8F4-15CD926DA146';
+const WRITE_CHARACTERISTICS_UUID = '19B10001-E8F2-537E-4F6C-D104768A1214';
 
 export default class App extends Component {
   constructor(props) {
@@ -113,6 +114,30 @@ export default class App extends Component {
     this.startScan(); // start scan on startup
   };
 
+  writeToCharacteristic = async () => {
+    try {
+      const deviceUUID = this.state.macID;
+      const serviceUUID = NANO_SERVICE_UUID;
+      const characteristicUUID = WRITE_CHARACTERISTICS_UUID;
+
+      // Connect to the device
+      await BleManager.connect(deviceUUID);
+      console.log('Connected');
+
+      // Retrieve services and characteristics
+      await BleManager.retrieveServices(deviceUUID);
+      console.log('Services and characteristics retrieved');
+
+      // Write to the characteristic
+      const data = [0x01]; // Replace this with the data you want to write
+      const encodedData = Uint8Array.from(data);
+      await BleManager.write(deviceUUID, serviceUUID, characteristicUUID, encodedData.buffer);
+      console.log('Data written to characteristic');
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  };
+
   componentWillUnmount = () => {
     console.log('componentWillUnmount');
     bleManagerEmitter.remove(
@@ -137,7 +162,7 @@ export default class App extends Component {
     });
     console.log('startScan');
     if (!this.state.isScanning) {
-      BleManager.scan([], 5, false) // scan only for devices with NANO_SERVICE_UUID
+      BleManager.scan([NANO_SERVICE_UUID], 5, false) // scan only for devices with NANO_SERVICE_UUID
         .then(results => {
           console.log('Scanning...');
           this.setState({isScanning: true}, () =>
@@ -413,6 +438,9 @@ export default class App extends Component {
               onPress={() => {
                 this.startNotify(this.state.macID);
               }}></Button>
+            <Button onPress={this.writeToCharacteristic}>
+              <Text>Write to Characteristic</Text>
+            </Button>
           </View>
         </View>
       </View>
